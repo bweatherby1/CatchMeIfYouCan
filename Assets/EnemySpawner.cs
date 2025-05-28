@@ -9,9 +9,8 @@ public class EnemySpawner : MonoBehaviour
     public float spawnInterval = 3f;
     public float spawnRadius = 8f;
 
-    // These define the rectangle area where enemies are allowed to spawn
-    public Vector2 spawnBoundsMin = new Vector2(-15f, -15f); // bottom-left
-    public Vector2 spawnBoundsMax = new Vector2(15f, 15f);   // top-right
+    public Vector2 spawnBoundsMin = new Vector2(-15f, -15f);
+    public Vector2 spawnBoundsMax = new Vector2(15f, 15f);
 
     void Start()
     {

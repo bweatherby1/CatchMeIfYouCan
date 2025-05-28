@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     public float maxSpeed = 8f;
     public float turnSpeed = 200f;
 
+    public GameObject peeloutSmokePrefab;
+
     private float currentSpeed = 0f;
     private float inputVertical;
     private float inputHorizontal;
@@ -20,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isDragging = false;
 
     private bool useTouchControls;
+    private bool hasPeeledOut = false;
 
     void Start()
     {
@@ -31,13 +34,9 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         if (useTouchControls)
-        {
             HandleTouchInput();
-        }
         else
-        {
             HandleKeyboardInput();
-        }
     }
 
     void HandleKeyboardInput()
@@ -69,7 +68,6 @@ public class PlayerMovement : MonoBehaviour
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
-
             if (touch.phase == TouchPhase.Began)
             {
                 isDragging = true;
@@ -100,6 +98,17 @@ public class PlayerMovement : MonoBehaviour
     {
         if (inputVertical != 0)
         {
+            if (!hasPeeledOut && Mathf.Approximately(currentSpeed, 0f))
+            {
+                hasPeeledOut = true;
+
+                if (peeloutSmokePrefab != null)
+                {
+                    Vector3 offset = -transform.up * 0.5f;
+                    Instantiate(peeloutSmokePrefab, transform.position + offset, transform.rotation);
+                }
+            }
+
             currentSpeed += inputVertical * acceleration * Time.fixedDeltaTime;
         }
         else
@@ -108,6 +117,9 @@ public class PlayerMovement : MonoBehaviour
                 currentSpeed = Mathf.Max(currentSpeed - deceleration * Time.fixedDeltaTime, 0);
             else if (currentSpeed < 0)
                 currentSpeed = Mathf.Min(currentSpeed + deceleration * Time.fixedDeltaTime, 0);
+
+            if (Mathf.Approximately(currentSpeed, 0f))
+                hasPeeledOut = false;
         }
 
         currentSpeed = Mathf.Clamp(currentSpeed, -maxSpeed / 2f, maxSpeed);
